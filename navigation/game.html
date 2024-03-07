@@ -1,177 +1,307 @@
----
-hide: true
-layout: base
-image: /images/alien_planet.jpg
-images:
-  background:
-    src: /images/alien_planet2.jpg
-  platform:
-    src: /images/platform.png
-  dog:
-    src: /images/dogSprite.png
-  monkey:
-    src: /images/monkeySprite.png
-  vader:
-    src: /images/vaderSprite.png
----
-<!-- Liquid code, run by Jekyll, used to define location of asset(s) -->
-{% assign backgroundFile = site.baseurl | append: page.images.background.src %}
-{% assign platformFile = site.baseurl | append: page.images.platform.src %}
-{% assign dogSpriteImage = site.baseurl | append: page.images.dog.src %}
-{% assign monkeySpriteImage = site.baseurl | append: page.images.monkey.src %}
-{% assign vaderSpriteImage = site.baseurl | append: page.images.vader.src %}
-
+<html>
 <style>
-    #controls {
-        position: relative;
-        z-index: 2; /* Ensure the controls are on top */
+    #canvas {
+        margin: 0;
+        border: 1px solid white;
     }
 </style>
-
-<!-- Prepare DOM elements -->
-<!-- Wrap both the dog canvas and controls in a container div -->
-<div id="canvasContainer">
-    <div id="controls"> <!-- Controls -->
-        <!-- Background controls -->
-        <button id="toggleCanvasEffect">Invert</button>
-        <!-- Dog controls -->
-        <input type="radio" name="animation" id="idle">
-        <label for="idle">Idle</label>
-        <input type="radio" name="animation" id="barking">
-        <label for="barking">Barking</label>
-        <input type="radio" name="animation" id="walking" checked>
-        <label for="walking">Walking</label>
-    </div>
-</div>
-
-<script type="module">
-    import GameEnv from '{{site.baseurl}}/assets/js/alienWorld/GameEnv.js';
-    import GameObject from '{{site.baseurl}}/assets/js/alienWorld/GameObject.js';
-    import Background from '{{site.baseurl}}/assets/js/alienWorld/Background.js';
-    import Character from '{{site.baseurl}}/assets/js/alienWorld/Character.js';
-    import { initPlatform } from '{{site.baseurl}}/assets/js/alienWorld/Platform.js';
-    import { initDog } from '{{site.baseurl}}/assets/js/alienWorld/CharacterDog.js';
-    import { initMonkey } from '{{site.baseurl}}/assets/js/alienWorld/CharacterMonkey.js';
-    import { initVader } from '{{site.baseurl}}/assets/js/alienWorld/CharacterVader.js';
-
-    // Create a function to load an image and return a Promise
-    async function loadImage(src) {
-        return new Promise((resolve, reject) => {
-        const image = new Image();
-        image.src = src;
-        image.onload = () => resolve(image);
-        image.onerror = reject;
-        });
-    }
-
-    // Game loop
-    function gameLoop() {
-        for (var gameObj of GameObject.gameObjectArray){
-            gameObj.update();
-            gameObj.draw();
+<canvas id='canvas'></canvas>
+<script>
+    let canvas = document.getElementById('canvas');
+    let c = canvas.getContext('2d');
+    canvas.width = 1500;
+    canvas.height = 400;
+    let gravity = 1.5;
+    let playerImage = new Image();
+    playerImage.src = '{{site.baseurl}}/images/GAME IMAGES/amazonBOX.png';
+    class Player {
+        constructor() {
+            this.position = {
+                x: 100,
+                y: 200
+            };
+            this.velocity = {
+                x: -10,
+                y: 0
+            };
+            this.width = 50;
+            this.height = 30;
+            this.image = playerImage;
         }
-        requestAnimationFrame(gameLoop);  // cycle game, aka recursion
-    }
-
-    // Window resize
-    window.addEventListener('resize', function () {
-        GameEnv.setGameEnv();  // Update GameEnv dimensions
-
-        // Call the sizing method on all game objects
-        for (var gameObj of GameObject.gameObjectArray){
-            gameObj.size();
+        draw() {
+            c.drawImage(this.image, this.position.x, this.position.y, this.width, this.height);
         }
-    });
-
-    // Toggle "canvas filter property" between alien and normal
-    var isFilterEnabled = false;
-    const defaultFilter = getComputedStyle(document.documentElement).getPropertyValue('--default-canvas-filter');
-    toggleCanvasEffect.addEventListener("click", function () {
-        for (var gameObj of GameObject.gameObjectArray){
-            if (gameObj.invert && isFilterEnabled) {  // toggle off
-                gameObj.canvas.style.filter = "none";  // remove filter
-            } else if (gameObj.invert) { // toggle on
-                gameObj.canvas.style.filter = defaultFilter;  // remove filter
-            } else {
-                gameObj.canvas.style.filter = "none";  // remove filter
+        update() {
+            this.draw();
+            this.position.y += this.velocity.y;
+            this.position.x += this.velocity.x;
+            if (this.position.y + this.height + this.velocity.y <= canvas.height)
+                this.velocity.y += gravity;
+            else
+                this.velocity.y = 0;
+        }
+    }
+    class Platform {
+        constructor(image) {
+            this.position = {
+                x: 0,
+                y: 310
+            }
+            this.image = image;
+            this.width = 1500;
+            this.height = 300;
+        }
+        draw() {
+            c.drawImage(this.image, this.position.x, this.position.y, this.width, this.height);
+        }
+    }
+    class Tube {
+        constructor(image) {
+            this.position = {
+                x: 1200,
+                y: 190
+            }
+            this.image = image;
+            this.width = 100;
+            this.height = 120;
+        }
+        draw() {
+            c.drawImage(this.image, this.position.x, this.position.y, this.width, this.height);
+        }
+    }
+    class BlockObject {
+        constructor(image) {
+            this.position = {
+                x: 200,
+                y: 50
+            };
+            this.image = image;
+            this.width = 300;
+            this.height = 160;
+        }
+        draw() {
+            c.drawImage(this.image, this.position.x, this.position.y, this.width, this.height);
+        }
+    }
+    class Goomba {
+        constructor(image) {
+            this.position = {
+                x: 250,
+                y: 260
+            };
+            this.image = image;
+            this.width = 55;
+            this.height = 55;
+            this.velocity = {
+                x: -2,
+                y: 0
             }
         }
-        isFilterEnabled = !isFilterEnabled;  // switch boolean value
-    });
-  
-
-    // Setup and store Game Objects
-    async function setupGame() {   
-        try {
-            // Open image files for Game Objects
-            const [backgroundImg, platformImg, dogImg, monkeyImg, vaderImg] = await Promise.all([
-                loadImage('{{backgroundFile}}'),
-                loadImage('{{platformFile}}'),
-                loadImage('{{dogSpriteImage}}'),
-                loadImage('{{monkeySpriteImage}}'),
-                loadImage('{{vaderSpriteImage}}')
-            ]);
-
-            // Setup Globals
-            GameEnv.gameSpeed = 2;
-            GameEnv.gravity = 3;
-
-            // Prepare HTML with Background Canvas
-            const backgroundCanvas = document.createElement("canvas");
-            backgroundCanvas.id = "background";
-            document.querySelector("#canvasContainer").appendChild(backgroundCanvas);
-            // Background object
-            const backgroundSpeedRatio = 0.2
-            new Background(backgroundCanvas, backgroundImg, backgroundSpeedRatio);  // Background Class calls GameObject Array which stores the instance
-
-            // Prepare HTML with Platform Canvas
-            const platformCanvas = document.createElement("canvas");
-            platformCanvas.id = "platform";
-            document.querySelector("#canvasContainer").appendChild(platformCanvas);
-            // Platform object
-            const platformSpeedRatio = 0.2;
-            initPlatform(platformCanvas, platformImg, platformSpeedRatio);
-
-            // Prepare HTML with Dog Canvas
-            const dogCanvas = document.createElement("canvas");
-            dogCanvas.id = "characters";
-            document.querySelector("#canvasContainer").appendChild(dogCanvas);
-            // Dog object
-            const dogSpeedRatio = 0.2
-            initDog(dogCanvas, dogImg, dogSpeedRatio, document.getElementById("controls"));
-
-            // Prepare HTML with Monkey Canvas
-            const monkeyCanvas = document.createElement("canvas");
-            monkeyCanvas.id = "characters";
-            document.querySelector("#canvasContainer").appendChild(monkeyCanvas);
-            // Monkey object
-            const monkeySpeedRatio = 0.7
-            initMonkey(monkeyCanvas, monkeyImg, monkeySpeedRatio);              
- 
-            // Prepare HTML with Vader Canvas
-            const vaderCanvas = document.createElement("canvas");
-            vaderCanvas.id = "characters";
-            document.querySelector("#canvasContainer").appendChild(vaderCanvas);
-            // Vader object
-            const vaderSpeedRatio = 0
-            initVader(vaderCanvas, vaderImg, vaderSpeedRatio); 
-
-            //var platform = new Platform(0, GameEnv.bottom - 50, GameEnv.innerWidth, 10);
-        
-        // Trap errors on failed image loads
-        } catch (error) {
-            console.error('Failed to load one or more images:', error);
+        draw() {
+            c.drawImage(this.image, this.position.x, this.position.y, this.width, this.height);
+        }
+        update() {
+            this.position.x += this.velocity.x;
+            this.draw();
         }
     }
-  
-    // Call and wait for Game Objects to be ready
-    await setupGame();
-
-    // Trigger a resize at start up
-    window.dispatchEvent(new Event('resize'));
-    toggleCanvasEffect.dispatchEvent(new Event('click'));
-
-    // Start the game
-    gameLoop();
-
+    let image = new Image()
+    let imageTube = new Image()
+    let imageBlock = new Image()
+    image.src = '{{site.baseurl}}/images/GAME IMAGES/other_road.png'
+    imageTube.src = '{{site.baseurl}}/images/GAME IMAGES/house.png'
+    imageBlock.src = '{{site.baseurl}}/images/GAME IMAGES/Cloud.png';
+    let imageGoomba = new Image()
+    imageGoomba.src = '{{site.baseurl}}/images/GAME IMAGES/Uno-Stalker.png';
+    let platform = new Platform(image)
+    let tube = new Tube(imageTube)
+    let blockObject = new BlockObject(imageBlock)
+    let goomba = new Goomba(imageGoomba)
+    player = new Player()
+    let keys = {
+        right: {
+            pressed: false
+        },
+        left: {
+            pressed: false
+        }
+    }
+    class GenericObject {
+        constructor({ x, y, image }) {
+            this.position = {
+                x,
+                y
+            };
+            this.image = image;
+            this.width = 1500; // Adjust the width to fit your canvas
+            this.height = 400; // Adjust the height to fit your canvas
+        }
+        draw() {
+            c.drawImage(this.image, this.position.x, this.position.y, this.width, this.height);
+        }
+    }
+    let imageBackground = new Image();
+    imageBackground.src = '{{site.baseurl}}/images/GAME IMAGES/Background-With-Road-6.1.png';
+    let background = new GenericObject({
+        x: 0,
+        y: 0,
+        image: imageBackground
+    });
+    let genericObjects = [background];
+    function animate() {
+        requestAnimationFrame(animate);
+        c.clearRect(0, 0, canvas.width, canvas.height);
+        genericObjects.forEach(genericObject => {
+            genericObject.draw()
+        });
+        platform.draw();
+        player.update();
+        tube.draw();
+        blockObject.draw();
+        goomba.update();
+        if (
+            player.position.y + player.height <= blockObject.position.y + 50 && // Add desired value to lower the player
+            player.position.y + player.height + player.velocity.y >= blockObject.position.y &&
+            player.position.x + player.width >= blockObject.position.x + 50 && // Add desired value to shorten the collision width
+            player.position.x <= blockObject.position.x + blockObject.width - 50 // Subtract desired value to shorten the collision width
+        )
+        {
+            player.velocity.y = 0;
+            player.position.y = blockObject.position.y - player.height + 50; // Adjust the player's position
+        }
+        if (keys.right.pressed && player.position.x + player.width <= canvas.width - 50) {
+            player.velocity.x = 15;
+        } else if (keys.left.pressed && player.position.x >= 50) {
+            player.velocity.x = -15;
+        } else {
+            player.velocity.x = 0;
+        }
+        if (
+                player.position.y + player.height <= platform.position.y &&
+                player.position.y + player.height + player.velocity.y >= platform.position.y &&
+                player.position.x + player.width >= platform.position.x &&
+                player.position.x <= platform.position.x + platform.width
+            )
+            {
+                player.velocity.y = 0;
+            }
+        if (
+                player.position.y + player.height <= tube.position.y &&
+                player.position.y + player.height + player.velocity.y >= tube.position.y &&
+                player.position.x + player.width >= tube.position.x &&
+                player.position.x <= tube.position.x + tube.width
+            ) {
+                player.velocity.y = 0;
+                player.position.y += 0.1
+                player.velocity.y = 0.0001
+                gravity = 0.2
+            }
+            if (player.position.y + player.height == tube.position.y + tube.height ||
+                    player.position.y + player.height <= tube.position.y ||
+                    player.position.x + player.width <= tube.position.x ||
+                    player.position.x >= tube.position.x + tube.width) {
+                        gravity = 1.5
+                    }
+        if (
+                player.position.x + player.width<= tube.position.x &&
+                player.position.x + player.width + player.velocity.x >= tube.position.x &&
+                player.position.y + player.height >= tube.position.y &&
+                player.position.y <= tube.position.y + tube.height
+            )
+            {
+                player.velocity.x = 0;
+            }
+        if (
+                player.position.x >= tube.position.x + tube.width &&
+                player.position.x + player.velocity.x <= tube.position.x + tube.width &&
+                player.position.y + player.height >= tube.position.y &&
+                player.position.y <= tube.position.y + tube.height
+            )
+            {
+                player.velocity.x = 0;
+            }
+        if (
+                player.position.x >= tube.position.x &&
+                player.position.x + player.velocity.x <= tube.position.x &&
+                player.position.y + player.height >= tube.position.y &&
+                player.position.y <= tube.position.y + tube.height
+            )
+            {
+                player.velocity.x = 0;
+            }
+        if (
+                player.position.x + player.width <= tube.position.x + tube.width &&
+                player.position.x + player.width + player.velocity.x >= tube.position.x + tube.width &&
+                player.position.y + player.height >= tube.position.y &&
+                player.position.y <= tube.position.y + tube.height
+            )
+            {
+                player.velocity.x = 0;
+            }
+        if(
+            player.position.y + player.height <= goomba.position.y &&
+            player.position.y + player.height + player.velocity.y >= goomba.position.y &&
+            player.position.x + player.width >= goomba.position.x &&
+            player.position.x <= goomba.position.x + goomba.width
+        )
+        {
+            player.velocity.y = -20;
+        }
+        if (
+            player.position.x < goomba.position.x + goomba.width &&
+            player.position.x + player.width > goomba.position.x &&
+            player.position.y < goomba.position.y + goomba.height &&
+            player.position.y + player.height > goomba.position.y
+        ) {
+            // Player collided with goomba, refresh the page
+            location.reload();
+        }
+        if (
+            goomba.position.x >= platform.position.x &&
+            goomba.position.x <= platform.position.x
+        )
+        {
+            goomba.velocity.x = 2;
+        }
+        if (
+            goomba.position.x + goomba.width <= tube.position.x &&
+            goomba.position.x + goomba.width + goomba.velocity.x >= tube.position.x
+        )
+        {
+            goomba.velocity.x = -2;
+        }
+    }
+    animate();
+    addEventListener('keydown', ({ keyCode }) => {
+        switch (keyCode) {
+            case 65:
+                keys.left.pressed = true;
+                break;
+            case 68:
+                keys.right.pressed = true;
+                break;
+            case 87:
+                player.velocity.y -= 20;
+                break;
+        }
+    });
+    addEventListener('keyup', ({ keyCode }) => {
+        switch (keyCode) {
+            case 65:
+                keys.left.pressed = false;
+                break;
+            case 68:
+                keys.right.pressed = false;
+                break;
+            case 87:
+                player.velocity.y = -20;
+                break;
+        }
+    })
 </script>
+
+
+
+
+
+
