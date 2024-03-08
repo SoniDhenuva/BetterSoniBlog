@@ -93,17 +93,17 @@ hide: true
 
     startWalking() {
       this.stopAnimate();
-      this.animate(this.obj["Walk"], 3);
+      this.animate(this.obj["Walk"], 3);//3
     }
 
     startRunning() {
       this.stopAnimate();
-      this.animate(this.obj["Run1"], 6);
+      this.animate(this.obj["Run1"], 12); //6
     }
 
     startPuffing() {
       this.stopAnimate();
-      this.animate(this.obj["Puff"], 0);
+      this.animate(this.obj["Puff"], 0);//0
     }
 
     startCheering() {
@@ -188,16 +188,9 @@ hide: true
   });
 
 </script>
----
-layout: default
-title: Student Blog
----
-<style> 
-    .fonts{
-        font-family: "Times New Roman", Times, serif;
-}
 
-</style>
+
+
 
 ## SONI BLOG CSSE
 
