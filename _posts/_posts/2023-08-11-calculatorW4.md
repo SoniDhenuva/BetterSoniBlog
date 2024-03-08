@@ -5,7 +5,7 @@ hide: true
 layout: default
 type: tangibles
 description: A common way to become familiar with a language is to build a calculator.  This calculator shows off button with actions.
-courses: { compsci: {week: 4} }
+courses: { csse: {week: 4} }
 ---
 
 <!-- 

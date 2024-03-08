@@ -188,12 +188,36 @@ hide: true
   });
 
 </script>
-Investing in Your Technical Future
+---
+layout: default
+title: Student Blog
+---
+<style> 
+    .fonts{
+        font-family: "Times New Roman", Times, serif;
+}
 
-Explore the Computer Science Pathway at Del Norte High School. All Del Norte CompSci classes are designed to provide a real-world development experience. Grading is focused on time invested, analytics, participation with peers, and engagement in learning.
+</style>
 
-- Project-based learning with teacher support
-- Tech Talks by teacher complimented with Student Teaching
-- Course learning includes Coding Languages, DevOps, GitHub, Research and Creativity
-- Student teams practice Agile Development Methodologies: planning, communication, collaboration
-- Class lab time provided and approximately 2-3 hours of homework per week
+## SONI BLOG CSSE
+
+### Welcome to My Blog! 
+<br>
+<img src = "https://images.unsplash.com/photo-1515879218367-8466d910aaa4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y29tcHV0ZXIlMjBjb2RlfGVufDB8fDB8fHww&w=1000&q=80" >
+
+<br>
+
+## MY WONDERFUL PARTNERS
+
+### The Coding Mode Gang: Soni, Nora & Varnika!!
+ <img src= "The Code Mode Gang.png">
+
+
+## About Me 
+
+### Here are some interesting things about me! 
+
+<img width="400" height ="600" src = "">
+
+
+

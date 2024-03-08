@@ -1,12 +1,12 @@
 ---
-toc: true
-comments: true
 layout: post
-title: Daily Plan W4
-description: These are the hacks and commands I learned in Week 4
-type: plans
-courses: { compsci: {week: 4} }
+toc: true
+title: Week 4 Plan
+courses: { csse: { week: 4 } }
+categories: []
+type: devops
+
 ---
- 
+
 
 >  
